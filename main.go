@@ -56,6 +56,35 @@ func userForm(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
+func createUsers(w http.ResponseWriter, req *http.Request) {
+	if req.Method == http.MethodPost {
+		usr := user{}
+		usr.Username = req.FormValue("username")
+		usr.FirstName = req.FormValue("firstName")
+		usr.LastName = req.FormValue("lastName")
+		bPass, e := bcrypt.GenerateFromPassword([]byte(req.FormValue("password")), bcrypt.MinCost)
+		if e != nil {
+			http.Error(w, e.Error(), http.StatusInternalServerError)
+			return
+		}
+		usr.Password = bPass
+		_, e = db.Exec(
+			"INSERT INTO users (username, first_name, last_name, password) VALUES (?, ?, ?, ?)",
+			usr.Username,
+			usr.FirstName,
+			usr.LastName,
+			usr.Password,
+		)
+		if e != nil {
+			http.Error(w, e.Error(), http.StatusInternalServerError)
+			return
+		}
+		http.Redirect(w, req, "/", http.StatusSeeOther)
+		return
+	}
+	http.Error(w, "Method Not Supported", http.StatusMethodNotAllowed)
+}
+
 func main() {
 	http.HandleFunc("/", index)
 	http.HandleFunc("/userForm", userForm)
