@@ -13,6 +13,14 @@ var db *sql.DB
 var err error
 var tpl *template.Template
 
+type user struct {
+	ID        int64
+	Username  string
+	Firstname string
+	Lastname  string
+	Password  []byte
+}
+
 func init() {
 	tpl = template.Must(template.ParseGlob("templates/*"))
 }
