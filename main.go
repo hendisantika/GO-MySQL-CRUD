@@ -105,6 +105,21 @@ func editUsers(w http.ResponseWriter, req *http.Request) {
 	tpl.ExecuteTemplate(w, "editUser.gohtml", usr)
 }
 
+func updateUsers(w http.ResponseWriter, req *http.Request) {
+	_, er := db.Exec(
+		"UPDATE users SET username = ?, first_name = ?, last_name = ? WHERE id = ? ",
+		req.FormValue("username"),
+		req.FormValue("firstName"),
+		req.FormValue("lastName"),
+		req.FormValue("id"),
+	)
+	if er != nil {
+		http.Error(w, er.Error(), http.StatusInternalServerError)
+		return
+	}
+	http.Redirect(w, req, "/", http.StatusSeeOther)
+}
+
 func main() {
 	http.HandleFunc("/", index)
 	http.HandleFunc("/userForm", userForm)
