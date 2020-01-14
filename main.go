@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	_ "github.com/go-sql-driver/mysql"
+	"golang.org/x/crypto/bcrypt"
 )
 
 var db *sql.DB
@@ -22,6 +23,10 @@ type user struct {
 }
 
 func init() {
+	db, err = sql.Open("mysql", "root:root@/blog")
+	checkErr(err)
+	err = db.Ping()
+	checkErr(err)
 	tpl = template.Must(template.ParseGlob("templates/*"))
 }
 
