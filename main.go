@@ -120,6 +120,20 @@ func updateUsers(w http.ResponseWriter, req *http.Request) {
 	http.Redirect(w, req, "/", http.StatusSeeOther)
 }
 
+func deleteUsers(res http.ResponseWriter, req *http.Request) {
+	id := req.FormValue("id")
+	if id == "" {
+		http.Error(res, "Please send ID", http.StatusBadRequest)
+		return
+	}
+	_, er := db.Exec("DELETE FROM users WHERE id = ?", id)
+	if er != nil {
+		http.Error(res, er.Error(), http.StatusBadRequest)
+		return
+	}
+	http.Redirect(res, req, "/", http.StatusSeeOther)
+}
+
 func main() {
 	http.HandleFunc("/", index)
 	http.HandleFunc("/userForm", userForm)
