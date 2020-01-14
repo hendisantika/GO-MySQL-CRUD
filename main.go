@@ -26,5 +26,12 @@ func init() {
 }
 
 func main() {
+	http.HandleFunc("/", index)
+	http.HandleFunc("/userForm", userForm)
+	http.HandleFunc("/createUsers", createUsers)
+	http.HandleFunc("/editUsers", editUsers)
+	http.HandleFunc("/deleteUsers", deleteUsers)
+	http.HandleFunc("/updateUsers", updateUsers)
+	log.Println("Server is up on 8080 port")
 	log.Fatalln(http.ListenAndServe(":8080", nil))
 }
