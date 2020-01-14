@@ -48,6 +48,14 @@ func index(w http.ResponseWriter, req *http.Request) {
 	tpl.ExecuteTemplate(w, "index.gohtml", users)
 }
 
+func userForm(w http.ResponseWriter, req *http.Request) {
+	err = tpl.ExecuteTemplate(w, "userForm.gohtml", nil)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
 func main() {
 	http.HandleFunc("/", index)
 	http.HandleFunc("/userForm", userForm)
