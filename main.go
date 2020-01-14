@@ -85,6 +85,26 @@ func createUsers(w http.ResponseWriter, req *http.Request) {
 	http.Error(w, "Method Not Supported", http.StatusMethodNotAllowed)
 }
 
+func editUsers(w http.ResponseWriter, req *http.Request) {
+	id := req.FormValue("id")
+	rows, err := db.Query(
+		`SELECT id,
+            username,
+            first_name,
+            last_name
+        FROM users
+        WHERE id = ` + id + `;`)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	usr := user{}
+	for rows.Next() {
+		rows.Scan(&usr.ID, &usr.Username, &usr.FirstName, &usr.LastName)
+	}
+	tpl.ExecuteTemplate(w, "editUser.gohtml", usr)
+}
+
 func main() {
 	http.HandleFunc("/", index)
 	http.HandleFunc("/userForm", userForm)
