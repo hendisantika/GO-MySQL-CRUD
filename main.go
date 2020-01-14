@@ -16,13 +16,36 @@ var tpl *template.Template
 type user struct {
 	ID        int64
 	Username  string
-	Firstname string
-	Lastname  string
+	FirstName string
+	LastName  string
 	Password  []byte
 }
 
 func init() {
 	tpl = template.Must(template.ParseGlob("templates/*"))
+}
+
+func index(w http.ResponseWriter, req *http.Request) {
+	rows, e := db.Query(
+		`SELECT id,
+        username,
+        first_name,
+        last_name,
+        password
+          FROM users;`)
+	if e != nil {
+		log.Println(e)
+		http.Error(w, e.Error(), http.StatusInternalServerError)
+		return
+	}
+	users := make([]user, 0)
+	for rows.Next() {
+		usr := user{}
+		rows.Scan(&usr.ID, &usr.Username, &usr.FirstName, &usr.LastName, &usr.Password)
+		users = append(users, usr)
+	}
+	log.Println(users)
+	tpl.ExecuteTemplate(w, "index.gohtml", users)
 }
 
 func main() {
